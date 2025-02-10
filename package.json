@@ -1,5 +1,5 @@
 {
-  "name": "Trash-Alert",
+  "name": "trash-alert",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -15,5 +15,4 @@
     "build": "tsc",
     "start": "ts-node src/lambda/index.ts"
   }
-
 }
