@@ -1,0 +1,9 @@
+{
+  "name": "Trash-Alert",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "ask-sdk-core": "^2.14.0"
+  }
+}
