@@ -5,6 +5,7 @@ import { ScheduleResponse } from '../types';
 export async function getTodayTrashSchedule(
   timestamp?: string
 ): Promise<string> {
+  const startTime = Date.now();
   console.log('Function getTodayTrashSchedule started');
 
   try {
@@ -20,19 +21,21 @@ export async function getTodayTrashSchedule(
       .from('collection_schedules')
       .select(
         `
-        trash_types (
-          name,
-          description
+        trash_types!inner (
+          name
         ),
-        day_of_week,
-        week_number,
         schedule_type
       `
       )
       .contains('day_of_week', [dayOfWeek])
       .or(
         `schedule_type.eq.weekly,and(schedule_type.eq.monthly,week_number.cs.{${weekNumber}})`
-      )) as { data: ScheduleResponse[] | null; error: any };
+      )
+      // 必要なカラムのみを取得
+      .order('schedule_type')) as {
+      data: ScheduleResponse[] | null;
+      error: any;
+    };
 
     console.log('Supabase response:', JSON.stringify({ data, error }, null, 2));
 
@@ -53,8 +56,13 @@ export async function getTodayTrashSchedule(
       .join('と');
 
     console.log('Returning result:', trashTypes);
+
+    const endTime = Date.now();
+    console.log(`Function execution time: ${endTime - startTime}ms`);
     return trashTypes;
   } catch (error) {
+    const endTime = Date.now();
+    console.error(`Error execution time: ${endTime - startTime}ms`);
     console.error('Unexpected error:', JSON.stringify(error, null, 2));
     return 'ゴミ収集情報の取得に失敗しました';
   }
