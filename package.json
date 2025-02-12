@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
     "ask-sdk-core": "^2.14.0",
     "ask-sdk-model": "^1.86.0"
   },
