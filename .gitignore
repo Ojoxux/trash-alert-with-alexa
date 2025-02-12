@@ -8,3 +8,9 @@ deployment-package.zip
 deno.lock
 
 .env
+
+.env.local
+
+.env.development
+
+.env.production
