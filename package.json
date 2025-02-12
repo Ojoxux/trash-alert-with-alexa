@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
     "ask-sdk-core": "^2.14.0",
     "ask-sdk-model": "^1.86.0"
   },
@@ -14,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/lambda/index.ts"
+    "start": "ts-node src/lambda/index.ts",
+    "deploy": "yarn build && cd dist && zip -r ../deployment-package.zip . && cd .. && zip -g deployment-package.zip package.json && zip -r deployment-package.zip node_modules"
   }
 }
