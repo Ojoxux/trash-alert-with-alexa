@@ -1,6 +1,7 @@
 import { supabase } from '../db/supabase';
 import { getCurrentDayOfWeek } from '../utils/date';
 import { ScheduleResponse } from '../types';
+import { getCachedSchedule, setCachedSchedule } from './cache';
 
 export async function getTodayTrashSchedule(
   timestamp?: string
@@ -15,6 +16,21 @@ export async function getTodayTrashSchedule(
 
     const weekNumber = Math.ceil(date.getDate() / 7); // 今月の第何週目かを計算
     console.log('Week number of month:', weekNumber);
+
+    const cacheKey = `${dayOfWeek}-${weekNumber}`;
+    const cachedData = getCachedSchedule(cacheKey);
+
+    if (cachedData) {
+      console.log('Returning cached data');
+      const trashTypes = cachedData
+        .map((schedule) => schedule.trash_types?.name)
+        .filter(Boolean)
+        .join('と');
+
+      const endTime = Date.now();
+      console.log(`Function execution time (cached): ${endTime - startTime}ms`);
+      return trashTypes;
+    }
 
     console.log('Attempting to fetch data from Supabase...');
     const { data, error } = (await supabase
@@ -48,6 +64,8 @@ export async function getTodayTrashSchedule(
     if (!data || data.length === 0) {
       return '収集予定のゴミはありません';
     }
+
+    setCachedSchedule(cacheKey, data);
 
     // 複数のゴミ種別がある場合、カンマで区切って列挙
     const trashTypes = data
