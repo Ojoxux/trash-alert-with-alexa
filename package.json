@@ -15,6 +15,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/lambda/index.ts"
+    "start": "ts-node src/lambda/index.ts",
+    "deploy": "yarn build && cd dist && zip -r ../deployment-package.zip . && cd .. && zip -g deployment-package.zip package.json && zip -r deployment-package.zip node_modules"
   }
 }
