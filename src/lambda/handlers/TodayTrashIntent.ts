@@ -5,7 +5,10 @@ export const TodayTrashIntentHandler: RequestHandler = {
   canHandle(handlerInput: HandlerInput) {
     return (
       handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
-      handlerInput.requestEnvelope.request.intent.name === 'TodayTrashIntent'
+      (handlerInput.requestEnvelope.request.intent.name ===
+        'TodayTrashIntent' ||
+        handlerInput.requestEnvelope.request.intent.name ===
+          'AMAZON.FallbackIntent')
     );
   },
   async handle(handlerInput: HandlerInput) {
@@ -14,20 +17,30 @@ export const TodayTrashIntentHandler: RequestHandler = {
       const todaySchedule = await getTodayTrashSchedule(timestamp);
       const today = new Date(timestamp);
       const dateStr = today.toLocaleDateString('ja-JP', {
-        year: 'numeric',
         month: 'long',
         day: 'numeric',
         weekday: 'long',
       });
 
-      const speechText = `${dateStr}です。今日は${todaySchedule}を出してください。収集時間は午前8時までです。`;
+      let speechText;
+      if (!todaySchedule || todaySchedule === '情報の取得に失敗しました') {
+        speechText = `${dateStr}は収集予定がありません。`;
+      } else {
+        speechText = `${dateStr}の収集は${todaySchedule}です。午前8時までに出してください。`;
+      }
 
-      return handlerInput.responseBuilder.speak(speechText).getResponse();
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .withShouldEndSession(true)
+        .getResponse();
     } catch (error) {
       console.error('Error:', error);
-      const errorText = 'ゴミ収集情報の取得中にエラーが発生しました。';
+      const errorText = 'すみません、ゴミ収集情報の取得に失敗しました。';
 
-      return handlerInput.responseBuilder.speak(errorText).getResponse();
+      return handlerInput.responseBuilder
+        .speak(errorText)
+        .withShouldEndSession(true)
+        .getResponse();
     }
   },
 };
